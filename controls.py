@@ -32,3 +32,4 @@ class BulletNature:
         self.y=5
         self.speed=1
         self.color=(60,60,60)
+        self.bullet_allowed=5

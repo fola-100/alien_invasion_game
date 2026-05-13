@@ -9,8 +9,10 @@ def check_event(craft,bullets,bullet_chars,screen):
         # -----FIRE BULLET------
         elif event.type==pygame.KEYDOWN:
             if event.key==pygame.K_SPACE:
-              ammo = Bullet(bullet_chars, craft, screen)
-              bullets.add(ammo)
+              if len(bullets)<bullet_chars.bullet_allowed:
+                ammo = Bullet(bullet_chars, craft, screen)
+                bullets.add(ammo)
+
 
 
 def update_game(craft, color):
@@ -59,8 +61,8 @@ def update_screen(color,spaceship,ship_image,screen,bullet_fired):
 def delete_bullet(bullet_fired,screen):
    screen_size=screen.get_rect()
    for each_bullet in  bullet_fired.copy():
-       if each_bullet.rect.x> screen_size.x:
-           each_bullet.remove()
+       if each_bullet.rect.x> screen_size.right:
+           each_bullet.kill()
 
 
 

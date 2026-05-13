@@ -46,7 +46,7 @@ def run_game():
           gf.update_game(craft, color)
           bullets_fired.update()
           gf.update_screen(color,craft,rotated_image,screen,bullets_fired)
-          gf.delete_bullet(bullets_fired,screen)
+          gf.delete_bullet(bullets_fired, screen)
 
 
 run_game()
