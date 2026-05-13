@@ -2,12 +2,18 @@ import pygame
 import sys
 from bullet import Bullet
 
-def check_event():
+def check_event(craft,bullets,bullet_chars,screen):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        # -----FIRE BULLET------
+        elif event.type==pygame.KEYDOWN:
+            if event.key==pygame.K_SPACE:
+              ammo = Bullet(bullet_chars, craft, screen)
+              bullets.add(ammo)
 
-def update_game(craft, color, bullets, bullet_image):
+
+def update_game(craft, color):
     keys = pygame.key.get_pressed()
     # ----LEFT AND RIGHT MOVEMENT---------
     if keys[pygame.K_f]:
@@ -22,10 +28,6 @@ def update_game(craft, color, bullets, bullet_image):
     # ----CHANGE_BACKGROUND_COLOR------
     if keys[pygame.K_r]:
         color.color_change()
-    # -----FIRE BULLET------
-    if keys[pygame.K_SPACE]:
-        ammo =Bullet(1, bullet_image, craft)
-        bullets.add(ammo)
 
     # -----LEFT AND RIGHT BOUNDARY------
     if 0 > craft.rect.x:
@@ -41,7 +43,7 @@ def update_game(craft, color, bullets, bullet_image):
     elif craft.rect.y > 720:
         craft.rect.y = 720
 
-def update_screen(color,spaceship,ship_image,screen,bullet_image,bullet_fired):
+def update_screen(color,spaceship,ship_image,screen,bullet_fired):
     red = color.red
     green = color.green
     blue = color.blue
@@ -50,13 +52,15 @@ def update_screen(color,spaceship,ship_image,screen,bullet_image,bullet_fired):
     rect = spaceship.rect
     screen.blit(ship_image, rect)
     for bullet in bullet_fired:
-        screen.blit(bullet_image,bullet.rect)
+        bullet.draw_bullet()
     pygame.display.flip()
 
 
 def delete_bullet(bullet_fired,screen):
-   for each_bullet in  bullet_fired:
-       if each_bullet.rect.x> screen.
+   screen_size=screen.get_rect()
+   for each_bullet in  bullet_fired.copy():
+       if each_bullet.rect.x> screen_size.x:
+           each_bullet.remove()
 
 
 

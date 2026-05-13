@@ -1,17 +1,17 @@
 class DisplaySize:
-    def __init__(self,width,height):
-        self.width=width
-        self.height=height
+    def __init__(self):
+        self.width=1200
+        self.height=800
 
     def values(self):
         return self.width,self.height
 
 
 class ScreenColor:
-    def __init__(self,red,green,blue):
-        self.red=red
-        self.green=green
-        self.blue=blue
+    def __init__(self):
+        self.red=100
+        self.green=100
+        self.blue=100
     def color_change(self):
         self.red += 5
         self.green += 2
@@ -20,3 +20,15 @@ class ScreenColor:
             self.red = self.green = self.blue = 0
 
 
+class ShipSize:
+    def __init__(self):
+        self.x=400
+        self.y=400
+
+
+class BulletNature:
+    def __init__(self):
+        self.x=15
+        self.y=5
+        self.speed=1
+        self.color=(60,60,60)
