@@ -1,10 +1,13 @@
 class SpaceShip:
 
-    def __init__(self, x, y, ship_image):
+    def __init__(self, ship_image,screen):
         self.ship_image = ship_image
-
+        self.screen=screen.get_rect()
         # rect stores position
-        self.rect = self.ship_image.get_rect(center=(x, y))
+
+        self.rect = self.ship_image.get_rect()
+        self.rect.centery= self.screen.centery
+        self.rect.left=self.screen.left
 
     def move_right(self):
         self.rect.x += 5

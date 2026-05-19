@@ -20,16 +20,17 @@ class ScreenColor:
             self.red = self.green = self.blue = 0
 
 
-class ShipSize:
-    def __init__(self):
-        self.x=400
-        self.y=400
-
-
 class BulletNature:
     def __init__(self):
         self.x=15
-        self.y=5
-        self.speed=1
+        self.y=300
+        self.speed=3
         self.color=(60,60,60)
         self.bullet_allowed=5
+
+
+class AlienShip:
+    def __init__(self):
+        self.speed = 1
+        self.horizontal_direction=-1
+        self.vertical_direction=-1
