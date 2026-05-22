@@ -4,7 +4,7 @@ import controls
 from ship import SpaceShip
 from pygame.sprite import Group
 from alien_ship import AlienCraft
-
+from game_stats import GameStats
 
 def run_game():
     pygame.init()
@@ -32,6 +32,9 @@ def run_game():
 #-----Alien_Ship_Speed
     alien_controls=controls.AlienShip()
 
+# -----Game_Controls-----
+    game_control = GameStats(alien_controls)
+
 #------Storage Bullets_Created-----
     bullets_fired=Group()
 
@@ -50,11 +53,12 @@ def run_game():
 
 
     while True:
+        if game_control.game_active:
           gf.check_event(craft,bullets_fired,bullet_char,screen)
           gf.update_game(craft, color)
           bullets_fired.update()
-          gf.check_collisions(bullets_fired, aliens,alien_controls,AlienCraft,smooth_alien_image,screen,craft)
-          gf.update_screen(color,craft,rotated_image,screen,bullets_fired,aliens,smooth_alien_image)
+          gf.collisions(bullets_fired, aliens, alien_controls, AlienCraft, smooth_alien_image, screen, craft,game_control)
+          gf.update_screen(color,craft,rotated_image,screen,bullets_fired,aliens,smooth_alien_image,)
           gf.update_alien_crafts(aliens,alien_controls)
           gf.delete_bullet(bullets_fired, screen)
 

@@ -34,3 +34,4 @@ class AlienShip:
         self.speed = 1
         self.horizontal_direction=-1
         self.vertical_direction=-1
+        self.ship_left=3

@@ -1,8 +1,8 @@
 import pygame
 import sys
+from time import sleep
 from bullet import Bullet
-
-def check_event(craft,bullets,bullet_chars,screen):
+def check_event(space_rocket, bullets, bullet_chars, screen):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -10,40 +10,40 @@ def check_event(craft,bullets,bullet_chars,screen):
         elif event.type==pygame.KEYDOWN:
             if event.key==pygame.K_SPACE:
               if len(bullets)<bullet_chars.bullet_allowed:
-                ammo = Bullet(bullet_chars, craft, screen)
+                ammo = Bullet(bullet_chars, space_rocket, screen)
                 bullets.add(ammo)
 
 
 
-def update_game(craft, color):
+def update_game(space_rocket, color):
     keys = pygame.key.get_pressed()
     # ----LEFT AND RIGHT MOVEMENT---------
     if keys[pygame.K_f]:
-        craft.move_left()
+        space_rocket.move_left()
     if keys[pygame.K_j]:
-        craft.move_right()
+        space_rocket.move_right()
     # ----UP AND DOWN MOVEMENT-----
     if keys[pygame.K_y]:
-        craft.move_up()
+        space_rocket.move_up()
     if keys[pygame.K_b]:
-        craft.move_down()
+        space_rocket.move_down()
     # ----CHANGE_BACKGROUND_COLOR------
     if keys[pygame.K_r]:
         color.color_change()
 
     # -----LEFT AND RIGHT BOUNDARY------
-    if 0 > craft.rect.x:
-        craft.rect.x = 1
+    if 0 > space_rocket.rect.x:
+        space_rocket.rect.x = 1
 
-    elif craft.rect.x > 1090:
-        craft.rect.x = 1090
+    elif space_rocket.rect.x > 1090:
+        space_rocket.rect.x = 1090
 
     # -----UP AND DOWN BOUNDARY-----
-    if 0 > craft.rect.y:
-        craft.rect.y = 1
+    if 0 > space_rocket.rect.y:
+        space_rocket.rect.y = 1
 
-    elif craft.rect.y > 720:
-        craft.rect.y = 720
+    elif space_rocket.rect.y > 720:
+        space_rocket.rect.y = 720
 
 def get_alien_number(screen_size, ship_height):
     # ------Number of ship to create----
@@ -51,9 +51,9 @@ def get_alien_number(screen_size, ship_height):
     number_of_ship = int(available_alien_space / (2 * ship_height))
     return number_of_ship
 
-def get_fleet_number(screen_size, alien_width, space_craft):
+def get_fleet_number(screen_size, alien_width, space_rocket):
 
-    available_flit_space=screen_size.width- (3 * alien_width + space_craft.rect.width)
+    available_flit_space=screen_size.width- (3 * alien_width + space_rocket.rect.width)
     number_of_flit=int(available_flit_space/(2 *alien_width))
     return number_of_flit
 
@@ -67,7 +67,7 @@ def create_ships(number_of_ship, screen, image, alien_vessel, alien_height, crea
         craft.rect.x=craft.x
         created_vessel.add(craft)
 
-def create_alien_fleet(alien_vessel, image, screen, aliens, space_craft, alien_settings):
+def create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, alien_settings):
     #----- Creating-Alien-Ship-----
     screen_size = screen.get_rect()
     craft = alien_vessel(image, screen,alien_settings)
@@ -76,7 +76,7 @@ def create_alien_fleet(alien_vessel, image, screen, aliens, space_craft, alien_s
 
     number_of_ship=get_alien_number(screen_size, alien_height)
 
-    number_of_fleet = get_fleet_number(screen_size, alien_width, space_craft)
+    number_of_fleet = get_fleet_number(screen_size, alien_width, space_rocket)
 
     for row_number in range(number_of_fleet):
      create_ships(number_of_ship, screen, image, alien_vessel, alien_height, aliens, alien_width, row_number, screen_size.width, alien_settings)
@@ -93,13 +93,64 @@ def check_fleet_edge(alien_fleet,ship_control):
          change_fleet_direction(alien_fleet,ship_control)
          break
 
-def check_collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_craft):
-    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
-
+def bullet_collision(bullets,aliens,aliens_settings, alien_vessel, image, screen, space_rocket):
+    alien_collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if len(aliens)==0:
         bullets.empty()
         aliens_settings.speed+=0.5
-        create_alien_fleet(alien_vessel,image,screen,aliens,space_craft,aliens_settings)
+        create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+
+def live_left(game_stats):
+    if game_stats.ship_left<=0:
+        game_stats.game_active=False
+
+def ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats):
+    if pygame.sprite.spritecollide(space_rocket, aliens, True):
+        sleep(0.5)
+        game_stats.ship_left -= 1
+
+        live_left(game_stats)
+
+        if game_stats.game_active:
+            bullets.empty()
+            aliens.empty()
+
+            create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+
+            space_rocket.reset_position()
+
+
+def check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_settings,game_stats,bullets):
+    screen_size=screen.get_rect()
+
+    for alien in aliens:
+        if screen_size.left >= alien.rect.left:
+           sleep(0.5)
+
+           game_stats.ship_left -= 1
+
+           live_left(game_stats)
+           if game_stats.game_active:
+               bullets.empty()
+               aliens.empty()
+
+               create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+               space_rocket.reset_position()
+               break
+           else:
+               break
+
+
+def collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stats):
+
+    bullet_collision(bullets,aliens,aliens_settings, alien_vessel, image, screen, space_rocket)
+
+    ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats)
+
+    check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_settings,game_stats,bullets)
+
+
+
 
 
 def update_alien_crafts(alien_ships, ship_control):
@@ -107,13 +158,13 @@ def update_alien_crafts(alien_ships, ship_control):
     alien_ships.update()
 
 
-def update_screen(color, spaceship, ship_image, screen, bullet_fired, alien_ships, alien_ship_image):
+def update_screen(color, space_rocket, ship_image, screen, bullet_fired, alien_ships, alien_ship_image):
     red = color.red
     green = color.green
     blue = color.blue
 # -----Drawing On Screen------
     screen.fill((red, green, blue))
-    rect = spaceship.rect
+    rect = space_rocket.rect
     screen.blit(ship_image, rect)
 #-----Drawing Alien_Craft On Screen----
     for alien_craft in alien_ships:
