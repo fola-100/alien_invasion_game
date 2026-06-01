@@ -9,8 +9,8 @@ class DisplaySize:
 
 class ScreenColor:
     def __init__(self):
-        self.red=100
-        self.green=100
+        self.red=160
+        self.green=120
         self.blue=100
     def color_change(self):
         self.red += 5
@@ -22,8 +22,8 @@ class ScreenColor:
 
 class BulletNature:
     def __init__(self):
-        self.x=15
-        self.y=300
+        self.x=40
+        self.y=15
         self.speed=3
         self.color=(60,60,60)
         self.bullet_allowed=5

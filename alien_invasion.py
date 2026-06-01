@@ -5,6 +5,7 @@ from ship import SpaceShip
 from pygame.sprite import Group
 from alien_ship import AlienCraft
 from game_stats import GameStats
+from button import Button
 
 def run_game():
     pygame.init()
@@ -45,7 +46,10 @@ def run_game():
     screen = pygame.display.set_mode(display_value)
     pygame.display.set_caption("Alien_invasion")
 
- # ------Creating Rocket_Ship------
+# -----Creating Start button-----
+    play_button=Button(screen, "PLAY")
+
+# ------Creating Rocket_Ship------
     craft = SpaceShip(rotated_image, screen)
 
 # -----Creating Alien-SpaceCraft------
@@ -53,14 +57,17 @@ def run_game():
 
 
     while True:
+        gf.check_event(craft, bullets_fired, bullet_char, screen, play_button, game_control, aliens, AlienCraft,
+                       smooth_alien_image, alien_controls)
+
         if game_control.game_active:
-          gf.check_event(craft,bullets_fired,bullet_char,screen)
-          gf.update_game(craft, color)
+          gf.update_game(craft, color,game_control)
           bullets_fired.update()
           gf.collisions(bullets_fired, aliens, alien_controls, AlienCraft, smooth_alien_image, screen, craft,game_control)
-          gf.update_screen(color,craft,rotated_image,screen,bullets_fired,aliens,smooth_alien_image,)
-          gf.update_alien_crafts(aliens,alien_controls)
+          gf.update_alien_crafts(aliens, alien_controls, game_control)
           gf.delete_bullet(bullets_fired, screen)
 
+        gf.update_screen(color, craft, rotated_image, screen, bullets_fired, aliens, smooth_alien_image, play_button,
+                         game_control)
 run_game()
 

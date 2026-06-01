@@ -2,20 +2,38 @@ import pygame
 import sys
 from time import sleep
 from bullet import Bullet
-def check_event(space_rocket, bullets, bullet_chars, screen):
+def check_event(space_rocket, bullets, bullet_chars, screen,play_button,game_stat,aliens,alien_vessel,image,aliens_settings):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         # -----FIRE BULLET------
-        elif event.type==pygame.KEYDOWN:
+        if  event.type==pygame.KEYDOWN:
             if event.key==pygame.K_SPACE:
               if len(bullets)<bullet_chars.bullet_allowed:
                 ammo = Bullet(bullet_chars, space_rocket, screen)
                 bullets.add(ammo)
+        #------Start game-----
+        if event.type==pygame.MOUSEBUTTONDOWN:
+           mouse_x, mouse_y=pygame.mouse.get_pos()
+           check_play_button(play_button,game_stat,mouse_x,mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings)
+
+def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings):
+    if play_button.rect.collidepoint(mouse_x,mouse_y):
+
+        game_stat.game_active = True
+        game_stat.reset()
+
+        bullets.empty()
+        aliens.empty()
+
+        create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+        space_rocket.reset_position()
 
 
 
-def update_game(space_rocket, color):
+
+def update_game(space_rocket, color,game_stat):
+  if game_stat.game_active:
     keys = pygame.key.get_pressed()
     # ----LEFT AND RIGHT MOVEMENT---------
     if keys[pygame.K_f]:
@@ -137,8 +155,7 @@ def check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_sett
                create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
                space_rocket.reset_position()
                break
-           else:
-               break
+
 
 
 def collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stats):
@@ -153,12 +170,13 @@ def collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, sp
 
 
 
-def update_alien_crafts(alien_ships, ship_control):
+def update_alien_crafts(alien_ships, ship_control,game_control):
+   if game_control.game_active:
     check_fleet_edge(alien_ships, ship_control)
     alien_ships.update()
 
 
-def update_screen(color, space_rocket, ship_image, screen, bullet_fired, alien_ships, alien_ship_image):
+def update_screen(color, space_rocket, ship_image, screen, bullet_fired, alien_ships, alien_ship_image,button,game_stat):
     red = color.red
     green = color.green
     blue = color.blue
@@ -173,6 +191,10 @@ def update_screen(color, space_rocket, ship_image, screen, bullet_fired, alien_s
 #-----Drawing Bullet On Screen-----
     for bullet in bullet_fired:
         bullet.draw_bullet()
+
+# ------Start Button-----
+    if not game_stat.game_active:
+            button.draw_button()
 
     pygame.display.flip()
 

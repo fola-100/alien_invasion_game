@@ -1,10 +1,10 @@
 class GameStats:
-    def __init__(self,game_settings):
-        self.game_controls=game_settings
-        self.game_active=True
+    def __init__(self, rocket_settings):
+        self.rockets=rocket_settings
+        self.game_active=False
         self.reset()
 
     def reset(self):
-        self.ship_left=self.game_controls.ship_left
+        self.ship_left=self.rockets.ship_left
 
 
