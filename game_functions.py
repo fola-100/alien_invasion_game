@@ -8,18 +8,19 @@ def check_event(space_rocket, bullets, bullet_chars, screen,play_button,game_sta
             sys.exit()
         # -----FIRE BULLET------
         if  event.type==pygame.KEYDOWN:
-            if event.key==pygame.K_SPACE:
+            if event.key==pygame.K_SPACE and game_stat.game_active :
               if len(bullets)<bullet_chars.bullet_allowed:
                 ammo = Bullet(bullet_chars, space_rocket, screen)
                 bullets.add(ammo)
         #------Start game-----
         if event.type==pygame.MOUSEBUTTONDOWN:
            mouse_x, mouse_y=pygame.mouse.get_pos()
-           check_play_button(play_button,game_stat,mouse_x,mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings)
+           if not game_stat.game_active:
+            check_play_button(play_button,game_stat,mouse_x,mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings)
 
 def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings):
     if play_button.rect.collidepoint(mouse_x,mouse_y):
-
+        pygame.mouse.set_visible(False)
         game_stat.game_active = True
         game_stat.reset()
 
@@ -121,6 +122,7 @@ def bullet_collision(bullets,aliens,aliens_settings, alien_vessel, image, screen
 def live_left(game_stats):
     if game_stats.ship_left<=0:
         game_stats.game_active=False
+        pygame.mouse.set_visible(True)
 
 def ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats):
     if pygame.sprite.spritecollide(space_rocket, aliens, True):
