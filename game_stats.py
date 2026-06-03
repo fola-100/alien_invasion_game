@@ -6,5 +6,8 @@ class GameStats:
 
     def reset(self):
         self.ship_left=self.rockets.ship_left
+        self.score = 0
+
+
 
 

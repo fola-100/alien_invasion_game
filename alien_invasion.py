@@ -6,6 +6,7 @@ from pygame.sprite import Group
 from alien_ship import AlienCraft
 from game_stats import GameStats
 from button import Button
+from scoreboard import Scoreboard
 
 def run_game():
     pygame.init()
@@ -52,6 +53,9 @@ def run_game():
 # -----Creating Start button-----
     play_button=Button(screen, "PLAY")
 
+# ------Create Scoreboard-----
+    sb=Scoreboard(screen,game_control)
+
 # ------Creating Rocket_Ship------
     craft = SpaceShip(rotated_image, screen)
 
@@ -71,6 +75,6 @@ def run_game():
           gf.delete_bullet(bullets_fired, screen)
 
         gf.update_screen(color, craft, rotated_image, screen, bullets_fired, aliens, smooth_alien_image, play_button,
-                         game_control)
+                         game_control,sb)
 run_game()
 

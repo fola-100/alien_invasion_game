@@ -178,7 +178,8 @@ def update_alien_crafts(alien_ships, alien_control, game_control,speed):
     alien_ships.update()
 
 
-def update_screen(color, space_rocket, ship_image, screen, bullet_fired, alien_ships, alien_ship_image,button,game_stat):
+def update_screen(color, space_rocket, ship_image, screen, bullet_fired, alien_ships,
+                  alien_ship_image,button,game_stat,sb):
     red = color.red
     green = color.green
     blue = color.blue
@@ -193,7 +194,8 @@ def update_screen(color, space_rocket, ship_image, screen, bullet_fired, alien_s
 #-----Drawing Bullet On Screen-----
     for bullet in bullet_fired:
         bullet.draw_bullet()
-
+#-----Drawing Scoreboard
+    sb.show_score()
 # ------Start Button-----
     if not game_stat.game_active:
             button.draw_button()
