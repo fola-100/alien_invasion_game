@@ -2,7 +2,7 @@ import pygame
 import sys
 from time import sleep
 from bullet import Bullet
-def check_event(space_rocket, bullets, bullet_chars, screen,play_button,game_stat,aliens,alien_vessel,image,aliens_settings):
+def check_event(space_rocket, bullets, bullet_chars, screen,play_button,game_stat,aliens,alien_vessel,image,aliens_settings,speed):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -10,15 +10,15 @@ def check_event(space_rocket, bullets, bullet_chars, screen,play_button,game_sta
         if  event.type==pygame.KEYDOWN:
             if event.key==pygame.K_SPACE and game_stat.game_active :
               if len(bullets)<bullet_chars.bullet_allowed:
-                ammo = Bullet(bullet_chars, space_rocket, screen)
+                ammo = Bullet(bullet_chars, space_rocket, screen,speed)
                 bullets.add(ammo)
         #------Start game-----
         if event.type==pygame.MOUSEBUTTONDOWN:
            mouse_x, mouse_y=pygame.mouse.get_pos()
            if not game_stat.game_active:
-            check_play_button(play_button,game_stat,mouse_x,mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings)
+            check_play_button(play_button,game_stat,mouse_x,mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings,speed)
 
-def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings):
+def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings,speed):
     if play_button.rect.collidepoint(mouse_x,mouse_y):
         pygame.mouse.set_visible(False)
         game_stat.game_active = True
@@ -27,10 +27,8 @@ def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alie
         bullets.empty()
         aliens.empty()
 
-        create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+        create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings,speed)
         space_rocket.reset_position()
-
-
 
 
 def update_game(space_rocket, color,game_stat):
@@ -76,20 +74,20 @@ def get_fleet_number(screen_size, alien_width, space_rocket):
     number_of_flit=int(available_flit_space/(2 *alien_width))
     return number_of_flit
 
-def create_ships(number_of_ship, screen, image, alien_vessel, alien_height, created_vessel, alien_width, row_number, screen_width,settings):
+def create_ships(number_of_ship, screen, image, alien_vessel, alien_height, created_vessel, alien_width, row_number, screen_width,settings,speed):
     # -----Creating Ship For Display-----
     for alien_number in range(number_of_ship):
-        craft = alien_vessel(image, screen,settings)
+        craft = alien_vessel(image, screen,settings,speed)
         craft.y = alien_height + 2 * alien_height * alien_number
         craft.x = screen_width - alien_width -( 2 * alien_width * row_number)
         craft.rect.y = craft.y
         craft.rect.x=craft.x
         created_vessel.add(craft)
 
-def create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, alien_settings):
+def create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, alien_settings,speed):
     #----- Creating-Alien-Ship-----
     screen_size = screen.get_rect()
-    craft = alien_vessel(image, screen,alien_settings)
+    craft = alien_vessel(image, screen,alien_settings,speed)
     alien_height = craft.rect.height
     alien_width=craft.rect.width
 
@@ -98,49 +96,51 @@ def create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, alien_
     number_of_fleet = get_fleet_number(screen_size, alien_width, space_rocket)
 
     for row_number in range(number_of_fleet):
-     create_ships(number_of_ship, screen, image, alien_vessel, alien_height, aliens, alien_width, row_number, screen_size.width, alien_settings)
+     create_ships(number_of_ship, screen, image, alien_vessel, alien_height, aliens, alien_width, row_number, screen_size.width, alien_settings,speed)
 
-def change_fleet_direction(aliens,settings):
+def change_fleet_direction(aliens,settings,speed):
     for each_ship in aliens:
-        each_ship.x+=settings.speed * settings.horizontal_direction
+        each_ship.x+=speed.alien_speed * settings.horizontal_direction
         each_ship.rect.x=each_ship.x
     settings.vertical_direction *= -1
 
-def check_fleet_edge(alien_fleet,ship_control):
+def check_fleet_edge(alien_fleet,alien_control,speed):
    for each_ship in alien_fleet:
        if each_ship.check_edge():
-         change_fleet_direction(alien_fleet,ship_control)
+         change_fleet_direction(alien_fleet,alien_control,speed)
          break
 
-def bullet_collision(bullets,aliens,aliens_settings, alien_vessel, image, screen, space_rocket):
+def bullet_collision(bullets,aliens,aliens_settings, alien_vessel, image, screen, space_rocket,speed):
     alien_collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if len(aliens)==0:
         bullets.empty()
-        aliens_settings.speed+=0.5
-        create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+        speed.increase_speed()
+        create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings,speed)
 
-def live_left(game_stats):
+def live_left(game_stats,speed):
     if game_stats.ship_left<=0:
         game_stats.game_active=False
+        speed.set_speed()
         pygame.mouse.set_visible(True)
 
-def ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats):
+
+def ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats,speed):
     if pygame.sprite.spritecollide(space_rocket, aliens, True):
         sleep(0.5)
         game_stats.ship_left -= 1
 
-        live_left(game_stats)
+        live_left(game_stats,speed)
 
         if game_stats.game_active:
             bullets.empty()
             aliens.empty()
 
-            create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+            create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings,speed)
 
             space_rocket.reset_position()
 
 
-def check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_settings,game_stats,bullets):
+def check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_settings,game_stats,bullets,speed):
     screen_size=screen.get_rect()
 
     for alien in aliens:
@@ -149,32 +149,32 @@ def check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_sett
 
            game_stats.ship_left -= 1
 
-           live_left(game_stats)
+           live_left(game_stats,speed)
            if game_stats.game_active:
                bullets.empty()
                aliens.empty()
 
-               create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings)
+               create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings,speed)
                space_rocket.reset_position()
                break
 
 
 
-def collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stats):
+def collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stats,speed):
 
-    bullet_collision(bullets,aliens,aliens_settings, alien_vessel, image, screen, space_rocket)
+    bullet_collision(bullets,aliens,aliens_settings, alien_vessel, image, screen, space_rocket,speed)
 
-    ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats)
+    ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats,speed)
 
-    check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_settings,game_stats,bullets)
-
-
+    check_alien_bottom(aliens,screen,alien_vessel,image,space_rocket,aliens_settings,game_stats,bullets,speed)
 
 
 
-def update_alien_crafts(alien_ships, ship_control,game_control):
+
+
+def update_alien_crafts(alien_ships, alien_control, game_control,speed):
    if game_control.game_active:
-    check_fleet_edge(alien_ships, ship_control)
+    check_fleet_edge(alien_ships, alien_control,speed)
     alien_ships.update()
 
 

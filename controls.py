@@ -24,14 +24,26 @@ class BulletNature:
     def __init__(self):
         self.x=40
         self.y=15
-        self.speed=3
         self.color=(60,60,60)
-        self.bullet_allowed=5
+        self.bullet_allowed=3
 
 
 class AlienShip:
     def __init__(self):
-        self.speed = 1
         self.horizontal_direction=-1
         self.vertical_direction=-1
         self.ship_left=3
+
+
+class DynamicSettings:
+    def __init__(self):
+        self.set_speed()
+
+    def set_speed(self):
+        self.bullet_speed = 3
+        self.alien_speed = 1
+        self.speedup_scale = 1.3
+
+    def increase_speed(self):
+        self.bullet_speed*=self.speedup_scale
+        self.alien_speed*=self.speedup_scale

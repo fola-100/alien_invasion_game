@@ -1,11 +1,12 @@
 from pygame.sprite import Sprite
 
 class AlienCraft(Sprite):
-    def __init__(self,image,screen,settings):
+    def __init__(self,image,screen,settings,speed):
         super().__init__()
         self.image=image
         self.screen_size=screen.get_rect()
         self.settings=settings
+        self.alien_speed=speed.alien_speed
         self.rect=image.get_rect()
         self.rect.centery=self.screen_size.centery
         self.rect.right=self.screen_size.right
@@ -13,7 +14,7 @@ class AlienCraft(Sprite):
         self.y=float(self.rect.y)
 
     def update(self):
-        self.y+= self.settings.speed * self.settings.vertical_direction
+        self.y+= self.alien_speed * self.settings.vertical_direction
         self.rect.y=self.y
 
 
