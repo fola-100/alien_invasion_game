@@ -65,7 +65,7 @@ def run_game():
 
     while True:
         gf.check_event(craft, bullets_fired, bullet_char, screen, play_button, game_control, aliens, AlienCraft,
-                       smooth_alien_image, alien_controls,dynamic_changes)
+                       smooth_alien_image, alien_controls,dynamic_changes,sb)
 
         if game_control.game_active:
           gf.update_game(craft, color,game_control)

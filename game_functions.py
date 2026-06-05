@@ -2,7 +2,9 @@ import pygame
 import sys
 from time import sleep
 from bullet import Bullet
-def check_event(space_rocket, bullets, bullet_chars, screen, play_button, game_stat, aliens, alien_vessel, image, aliens_settings, dynamic_settings):
+
+def check_event(space_rocket, bullets, bullet_chars, screen, play_button, game_stat, aliens, alien_vessel, image,
+                aliens_settings, dynamic_settings,sb):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -16,14 +18,15 @@ def check_event(space_rocket, bullets, bullet_chars, screen, play_button, game_s
         if event.type==pygame.MOUSEBUTTONDOWN:
            mouse_x, mouse_y=pygame.mouse.get_pos()
            if not game_stat.game_active:
-            check_play_button(play_button, game_stat, mouse_x, mouse_y, bullets, aliens, alien_vessel, image, screen, space_rocket, aliens_settings, dynamic_settings)
+            check_play_button(play_button, game_stat, mouse_x, mouse_y, bullets, aliens, alien_vessel, image, screen, space_rocket, aliens_settings, dynamic_settings,sb)
 
-def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings,speed):
+def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alien_vessel,image,screen,space_rocket,aliens_settings,speed,sb):
     if play_button.rect.collidepoint(mouse_x,mouse_y):
         pygame.mouse.set_visible(False)
         game_stat.game_active = True
         game_stat.reset()
-
+        sb.display_top_score()
+        sb.pre_high_score()
         bullets.empty()
         aliens.empty()
 
@@ -70,7 +73,7 @@ def get_alien_number(screen_size, ship_height):
 
 def get_fleet_number(screen_size, alien_width, space_rocket):
 
-    available_flit_space=screen_size.width- (3 * alien_width + space_rocket.rect.width)
+    available_flit_space= screen_size.width - (3 * alien_width + space_rocket.rect.width)
     number_of_flit=int(available_flit_space/(2 *alien_width))
     return number_of_flit
 
@@ -96,7 +99,7 @@ def create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, alien_
     number_of_fleet = get_fleet_number(screen_size, alien_width, space_rocket)
 
     for row_number in range(number_of_fleet):
-     create_ships(number_of_ship, screen, image, alien_vessel, alien_height, aliens, alien_width, row_number, screen_size.width, alien_settings,speed)
+     create_ships(number_of_ship, screen, image, alien_vessel, alien_height, aliens, alien_width, row_number, screen_size.width, alien_settings, speed)
 
 def change_fleet_direction(aliens,settings,speed):
     for each_ship in aliens:
@@ -110,13 +113,13 @@ def check_fleet_edge(alien_fleet,alien_control,speed):
          change_fleet_direction(alien_fleet,alien_control,speed)
          break
 
-def bullet_collision(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket,game_stat, ds,bs):
+def bullet_collision(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stat, ds, sb):
     alien_collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if alien_collisions:
         for alien_hit in alien_collisions.values():
             game_stat.score += ds.kill_point* len(alien_hit)
-            bs.score_display()
-            bs.pre_score()
+            sb.score_display()
+            sb.pre_score()
 
     if len(aliens)==0:
         bullets.empty()
@@ -126,22 +129,23 @@ def bullet_collision(bullets, aliens, aliens_settings, alien_vessel, image, scre
 def live_left(game_stats,speed):
     if game_stats.ship_left<=0:
         game_stats.game_active=False
+        game_stats.update_high_score()
         speed.set_speed()
         pygame.mouse.set_visible(True)
 
 
-def ship_hit(aliens_settings,bullets,aliens,alien_vessel,image,screen,space_rocket,game_stats,speed):
+def ship_hit(aliens_settings, bullets, aliens, alien_vessel, image, screen, space_rocket, game_stats, dynamic_settings):
     if pygame.sprite.spritecollide(space_rocket, aliens, True):
         sleep(0.5)
         game_stats.ship_left -= 1
 
-        live_left(game_stats,speed)
+        live_left(game_stats, dynamic_settings)
 
         if game_stats.game_active:
             bullets.empty()
             aliens.empty()
 
-            create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings,speed)
+            create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings, dynamic_settings)
 
             space_rocket.reset_position()
 
@@ -166,9 +170,9 @@ def check_alien_bottom(aliens, screen, alien_vessel, image, space_rocket, aliens
 
 
 
-def collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stats, dynamic_setting,bs):
+def collisions(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stats, dynamic_setting, sb):
 
-    bullet_collision(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket,game_stats, dynamic_setting,bs)
+    bullet_collision(bullets, aliens, aliens_settings, alien_vessel, image, screen, space_rocket, game_stats, dynamic_setting, sb)
 
     ship_hit(aliens_settings, bullets, aliens, alien_vessel, image, screen, space_rocket, game_stats, dynamic_setting)
 
