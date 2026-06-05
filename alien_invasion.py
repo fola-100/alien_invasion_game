@@ -35,7 +35,7 @@ def run_game():
     alien_controls=controls.AlienShip()
 
 # -----Object_speed_Controls------
-    speed = controls.DynamicSettings()
+    dynamic_changes = controls.DynamicSettings()
 
 # -----Game_Controls-----
     game_control = GameStats(alien_controls)
@@ -60,18 +60,18 @@ def run_game():
     craft = SpaceShip(rotated_image, screen)
 
 # -----Creating Alien-SpaceCraft------
-    gf.create_alien_fleet(AlienCraft, smooth_alien_image, screen, aliens, craft,alien_controls,speed)
+    gf.create_alien_fleet(AlienCraft, smooth_alien_image, screen, aliens, craft,alien_controls,dynamic_changes)
 
 
     while True:
         gf.check_event(craft, bullets_fired, bullet_char, screen, play_button, game_control, aliens, AlienCraft,
-                       smooth_alien_image, alien_controls,speed)
+                       smooth_alien_image, alien_controls,dynamic_changes)
 
         if game_control.game_active:
           gf.update_game(craft, color,game_control)
           bullets_fired.update()
-          gf.collisions(bullets_fired, aliens, alien_controls, AlienCraft, smooth_alien_image, screen, craft,game_control,speed)
-          gf.update_alien_crafts(aliens, alien_controls, game_control,speed)
+          gf.collisions(bullets_fired, aliens, alien_controls, AlienCraft, smooth_alien_image, screen, craft,game_control,dynamic_changes,sb)
+          gf.update_alien_crafts(aliens, alien_controls, game_control,dynamic_changes)
           gf.delete_bullet(bullets_fired, screen)
 
         gf.update_screen(color, craft, rotated_image, screen, bullets_fired, aliens, smooth_alien_image, play_button,

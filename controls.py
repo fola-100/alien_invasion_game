@@ -37,13 +37,16 @@ class AlienShip:
 
 class DynamicSettings:
     def __init__(self):
+        self.speedup_scale = 1.3
+        self.score_scale=1.3
         self.set_speed()
 
     def set_speed(self):
         self.bullet_speed = 3
         self.alien_speed = 1
-        self.speedup_scale = 1.3
+        self.kill_point=50
 
     def increase_speed(self):
+        self.kill_point =int(self.kill_point* self.score_scale)
         self.bullet_speed*=self.speedup_scale
         self.alien_speed*=self.speedup_scale
