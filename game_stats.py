@@ -9,6 +9,7 @@ class GameStats:
     def reset(self):
         self.ship_left=self.rockets.ship_left
         self.score = 0
+        self.current_lvl = 1
         self.pre_high_score()
 
     def pre_high_score(self):

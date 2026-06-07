@@ -25,8 +25,10 @@ def check_play_button(play_button,game_stat,mouse_x, mouse_y,bullets,aliens,alie
         pygame.mouse.set_visible(False)
         game_stat.game_active = True
         game_stat.reset()
-        sb.display_top_score()
+        sb.pre_score()
+      #  sb.display_top_score()
         sb.pre_high_score()
+        sb.pre_current_lvl()
         bullets.empty()
         aliens.empty()
 
@@ -125,12 +127,14 @@ def bullet_collision(bullets, aliens, aliens_settings, alien_vessel, image, scre
         bullets.empty()
         ds.increase_speed()
         create_alien_fleet(alien_vessel, image, screen, aliens, space_rocket, aliens_settings,  ds)
+        game_stat.current_lvl += 1
+        sb.pre_current_lvl()
 
-def live_left(game_stats,speed):
+def live_left(game_stats, ds):
     if game_stats.ship_left<=0:
         game_stats.game_active=False
         game_stats.update_high_score()
-        speed.set_speed()
+        ds.set_speed()
         pygame.mouse.set_visible(True)
 
 
